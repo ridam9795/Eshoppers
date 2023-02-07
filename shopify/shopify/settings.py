@@ -57,7 +57,7 @@ ROOT_URLCONF = 'shopify.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['shopify/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
