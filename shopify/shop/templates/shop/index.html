@@ -71,7 +71,14 @@ height:400px !important;
     display:inline-table;
     margin:20px;
 }
-
+@media (min-width: 576px){
+.form-inline .form-control {
+    display: inline-block;
+    width: 494px !important;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+}
 {% endblock %}
 {% block body %}
 {% load static %}
@@ -232,7 +239,7 @@ function updatePopover(cart) {
 
     popStr = popStr + "</div>"
     document.getElementById('popcart').setAttribute('data-content', popStr)
-    $('#popcart').popover('show')
+   // $('#popcart').popover('show')
 }
 
 function clearCart() {

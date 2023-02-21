@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Product, Contact, Order,OrderUpdate
 from math import ceil
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
+from django.contrib import messages
 from PayTm import Checksum
 import json
 
@@ -125,7 +128,7 @@ def checkout(request):
         }
         param_dict['CHECKSUMHASH'] = Checksum.generate_checksum(param_dict, MERCHANT_KEY)
 
-        return render(request,'shop/paytm.html',{'param_dict':param_dict})
+        return render(request, 'shop/paytm.html', {'param_dict': param_dict, 'user': request.user})
     return render(request, 'shop/checkout.html')
 
 @csrf_exempt
@@ -157,3 +160,41 @@ def handlerequest(request):
             print('order was not successful because' + response_dict['RESPMSG'])
     return render(request, 'shop/paymentstatus.html', {'response': response_dict})
     # paytm will send you post request here.
+
+
+def handlelogin(request):
+    if request.method == "POST":
+        loginUserName = request.POST.get("loginUserName")
+        loginPassword = request.POST.get("loginPassword")
+        user = authenticate(username=loginUserName, password=loginPassword)
+        if user is not None:
+            login(request, user)
+            messages.success(request, "Logged in successfully")
+        else:
+            messages.error(request, "invalid credentials")
+
+    return redirect('/')
+
+
+def handlesignup(request):
+    if request.method == "POST":
+        firstName = request.POST.get("firstName")
+        lastName = request.POST.get("lastName")
+        username = request.POST.get("username")
+        signUpEmail = request.POST.get("signUpEmail")
+        signUpPassword = request.POST.get("signUpPassword")
+        print(firstName, lastName, username, signUpEmail, signUpPassword)
+        myuser = User.objects.create_user(
+            username, signUpEmail, signUpPassword)
+        myuser.first_name = firstName
+        myuser.last_name = lastName
+        myuser.save()
+
+    return redirect('/')
+
+
+def handlelogout(request):
+    print(request)
+    logout(request)
+    messages.success(request, "Logged out successfully")
+    return redirect("/shop")
